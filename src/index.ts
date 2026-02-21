@@ -5,6 +5,7 @@ import { registerControlTools } from "./tools/controls.js";
 import { registerEvidenceTools } from "./tools/evidence.js";
 import { registerAssessmentTools } from "./tools/assessment.js";
 import { registerAgentTools } from "./tools/agents.js";
+import { registerInfraTools } from "./tools/infra.js";
 
 const server = new McpServer({
   name: "soc2-compliance",
@@ -17,6 +18,7 @@ registerControlTools(server);
 registerEvidenceTools(server);
 registerAssessmentTools(server);
 registerAgentTools(server);
+registerInfraTools(server);
 
 // Connect via stdio
 const transport = new StdioServerTransport();

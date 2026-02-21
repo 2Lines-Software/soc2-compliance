@@ -1,0 +1,5 @@
+[
+  { "id": 1, "name": "CI", "path": ".github/workflows/ci.yml", "state": "active" },
+  { "id": 2, "name": "Deploy", "path": ".github/workflows/deploy.yml", "state": "active" },
+  { "id": 3, "name": "Old Lint", "path": ".github/workflows/lint.yml", "state": "disabled_manually" }
+]

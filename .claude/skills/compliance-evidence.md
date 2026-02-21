@@ -19,33 +19,41 @@ You are a compliance evidence collector for small technology companies. Your job
 
 ### Step 2: Automated Evidence Collection
 
-For each available MCP integration, collect evidence:
+Use the built-in infrastructure tools to collect evidence. Each tool returns structured findings with TSC control mappings. First check which CLIs are available, then run the relevant tools.
 
-**GitHub (if available):**
-- Branch protection rules → CC8.1
-- CI/CD pipeline configuration → CC8.1
-- Collaborator access list → CC5.1, CC6.6
-- Secret scanning status → CC5.2, CC7.1
-- Dependabot/vulnerability alerts → CC7.1
+**GitHub (`gh` CLI):**
+1. Run `gh_auth_status` — if authenticated, proceed:
+2. `gh_branch_protection` (owner, repo, branch) → CC5.2, CC8.1
+3. `gh_repo_security` (owner, repo) → CC7.1 (secret scanning, Dependabot)
+4. `gh_collaborators` (owner, repo) → CC5.1
+5. `gh_workflows` (owner, repo) → CC8.1
 
-**Cloud Provider (if available):**
-- IAM users, roles, MFA status → CC5.1, CC6.1
-- Storage encryption configuration → CC6.1
-- Network/firewall rules → CC6.6
-- Logging/audit configuration → CC7.1
-- Backup configuration → CC7.3
+**AWS (`aws` CLI):**
+1. Run `aws_auth_status` — if authenticated, proceed:
+2. `aws_iam_mfa_status` → CC5.1, CC6.2
+3. `aws_cloudtrail_status` → CC7.1
+4. `aws_s3_encryption` → CC6.1
+5. `aws_kms_keys` → CC6.1
+6. `aws_security_groups` → CC6.6
+7. `aws_backup_config` → CC7.3
 
-**Identity Provider (if available):**
-- User directory → CC5.1
-- MFA enrollment status → CC5.1, CC6.2
-- Password policy → CC5.1
-- Login audit events → CC7.1
+**Google Cloud (`gcloud` CLI):**
+1. Run `gcloud_auth_status` — if authenticated, proceed:
+2. `gcloud_iam_policy` (project) → CC5.1
+3. `gcloud_service_accounts` (project) → CC5.1
+4. `gcloud_logging_sinks` (project) → CC7.1
+5. `gcloud_kms_keys` (project) → CC6.1
+6. `gcloud_firewall_rules` (project) → CC6.6
 
-Store each evidence artifact using `store_evidence` with:
+Get the owner/repo/project values from `config/scope.md`.
+
+For each tool result, store the output using `store_evidence` with:
 - Category: "automated"
-- Subcategory: source name (e.g., "github", "cloud-iam")
-- Filename: `YYYY-MM-DD-description.json` or `.md`
-- Control IDs: the TSC controls this evidence supports
+- Subcategory: source name (e.g., "github", "aws", "gcloud")
+- Filename: `YYYY-MM-DD-{tool-name}.json`
+- Control IDs: the `tsc_controls` array from the tool result
+
+If a CLI isn't installed, skip that section and note it in the collection summary — the manual attestation step will cover those controls.
 
 ### Step 3: Manual Attestations
 
@@ -109,3 +117,6 @@ After all collection:
 - `map_evidence_to_control` — Link evidence to controls
 - `update_manifest` — Update the evidence manifest
 - `get_compliance_dashboard` — Show overall status
+- `gh_*` — GitHub infrastructure discovery (5 tools)
+- `aws_*` — AWS infrastructure discovery (7 tools)
+- `gcloud_*` — Google Cloud infrastructure discovery (6 tools)

@@ -109,19 +109,19 @@ This classification determines which controls apply:
 
 Run `/compliance-agents` to register agents, audit compliance, and check credential rotation. See `AGENT-GOVERNANCE-FRAMEWORK.md` for the full design.
 
-## Connecting Infrastructure MCPs
+## Infrastructure Discovery (Built-in)
 
-The more MCPs you connect, the more the agents can discover and collect automatically:
+The MCP server includes built-in infrastructure discovery tools that wrap CLIs you already have installed. No third-party MCP packages needed — just `gh`, `aws`, and `gcloud` with your existing authentication.
 
-| MCP | What It Unlocks | Controls Covered |
-|-----|----------------|-----------------|
-| **GitHub** | Branch protection, CI/CD config, collaborator access, secret scanning, Dependabot | CC5.1, CC5.2, CC7.1, CC8.1 |
-| **AWS / GCP / Azure** | IAM users & MFA, encryption config, network rules, logging, backups | CC5.1, CC6.1, CC6.6, CC7.1, CC7.3 |
-| **Google Workspace / Okta** | User directory, MFA status, password policy, login audit | CC5.1, CC6.2, CC7.1 |
-| **Secrets Manager** | Secret inventory (names only), rotation dates | CC6.1 |
-| **Endpoint MDM** | Device encryption, OS patches, firewall status | CC5.1, CC6.1, CC6.8 |
+| CLI | Tools | What It Checks | Controls |
+|-----|-------|---------------|----------|
+| **`gh`** | `gh_auth_status`, `gh_branch_protection`, `gh_repo_security`, `gh_collaborators`, `gh_workflows` | Branch protection rules, secret scanning, Dependabot, collaborator access, CI/CD workflows | CC5.1, CC5.2, CC7.1, CC8.1 |
+| **`aws`** | `aws_auth_status`, `aws_iam_mfa_status`, `aws_cloudtrail_status`, `aws_s3_encryption`, `aws_kms_keys`, `aws_security_groups`, `aws_backup_config` | IAM users & MFA, CloudTrail logging, S3 encryption, KMS key rotation, security group rules, backup plans | CC5.1, CC6.1, CC6.2, CC6.6, CC7.1, CC7.3 |
+| **`gcloud`** | `gcloud_auth_status`, `gcloud_iam_policy`, `gcloud_service_accounts`, `gcloud_logging_sinks`, `gcloud_kms_keys`, `gcloud_firewall_rules` | IAM policies, service accounts, logging sinks, KMS keys, firewall rules | CC5.1, CC6.1, CC6.6, CC7.1 |
 
-**Without any infrastructure MCPs**, the agents still work — they just ask you questions instead of pulling data automatically. You can start with zero MCPs and add them over time.
+**How it works:** Each tool shells out to the CLI, parses JSON output, and returns structured findings mapped to TSC controls. All tools are read-only. Auth is your responsibility — the framework never stores or manages credentials.
+
+**Without any CLIs installed**, the agents still work — they just ask you questions instead of pulling data automatically. Install and authenticate CLIs as you go.
 
 ## TSC Scope
 
@@ -164,13 +164,17 @@ Structured templates for manual attestations:
 - Annual training completion
 - Device security attestation
 
-### MCP Server (17 tools)
+### MCP Server (40 tools)
 | Group | Tools |
 |-------|-------|
 | Documents | `list_documents`, `read_document`, `create_document`, `update_document`, `update_document_status` |
 | Controls | `list_controls`, `get_control`, `get_control_coverage`, `map_evidence_to_control` |
 | Evidence | `store_evidence`, `list_evidence`, `get_evidence_manifest`, `update_manifest` |
 | Assessment | `run_gap_analysis`, `run_readiness_check`, `get_compliance_dashboard`, `get_remediation_roadmap` |
+| Agents | `list_agents`, `get_agent`, `get_agent_coverage`, `check_credential_rotation`, `run_agent_audit` |
+| GitHub | `gh_auth_status`, `gh_branch_protection`, `gh_repo_security`, `gh_collaborators`, `gh_workflows` |
+| AWS | `aws_auth_status`, `aws_iam_mfa_status`, `aws_cloudtrail_status`, `aws_s3_encryption`, `aws_kms_keys`, `aws_security_groups`, `aws_backup_config` |
+| GCloud | `gcloud_auth_status`, `gcloud_iam_policy`, `gcloud_service_accounts`, `gcloud_logging_sinks`, `gcloud_kms_keys`, `gcloud_firewall_rules` |
 
 ## Solo-Company Adaptations
 
@@ -186,7 +190,7 @@ These aren't workarounds — they're legitimate compensating controls that audit
 
 ## Roadmap
 
-- [ ] Infrastructure MCP integrations (AWS, GCP, GitHub)
+- [x] Infrastructure CLI integrations (AWS, GCP, GitHub)
 - [ ] Automated evidence collection on a schedule (for Type II)
 - [ ] Additional TSC criteria (Availability, Processing Integrity, Privacy)
 - [ ] Pre-built Plaid/Stripe security questionnaire mappings

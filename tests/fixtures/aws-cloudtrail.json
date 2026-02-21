@@ -1,0 +1,12 @@
+{
+  "trailList": [
+    {
+      "Name": "main-trail",
+      "TrailARN": "arn:aws:cloudtrail:us-east-1:123456:trail/main-trail",
+      "IsMultiRegionTrail": true,
+      "LogFileValidationEnabled": true,
+      "S3BucketName": "acme-cloudtrail-logs",
+      "HomeRegion": "us-east-1"
+    }
+  ]
+}

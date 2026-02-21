@@ -1,0 +1,6 @@
+{
+  "Users": [
+    { "UserName": "alice", "Arn": "arn:aws:iam::123456:user/alice", "CreateDate": "2025-01-15T00:00:00Z" },
+    { "UserName": "bob", "Arn": "arn:aws:iam::123456:user/bob", "CreateDate": "2025-06-01T00:00:00Z" }
+  ]
+}
