@@ -48,3 +48,19 @@ This framework is designed for 1-5 person companies. Key adaptations:
 - Automated CI gates substitute for human review processes
 - Quarterly self-review checklists replace manager-led access reviews
 - Self-directed training replaces formal training programs
+
+## How the Agents Work with Infrastructure
+The skills are designed to be **progressively automated**:
+- With no infrastructure MCPs: agents ask the user questions and record answers as evidence
+- With GitHub MCP: agents automatically pull branch protection, CI config, collaborator access
+- With cloud provider MCP: agents pull IAM, encryption, network, logging config
+- With identity provider MCP: agents pull MFA status, user directory, password policies
+
+Each skill checks what MCPs are available and adapts accordingly. The gap assessment agent's "discover" phase uses whatever is connected and falls back to interactive questions for the rest.
+
+## Contributing
+When adding new infrastructure MCP integrations:
+1. The skill files in `.claude/skills/` describe what data to collect from each source
+2. The control mappings in `compliance/controls/` have `MCP discovery targets` fields showing what maps where
+3. Evidence should be stored via the `store_evidence` MCP tool with appropriate `control_ids`
+4. Follow existing patterns: automated evidence goes in `evidence/automated/{source}/`, named `YYYY-MM-DD-description.ext`

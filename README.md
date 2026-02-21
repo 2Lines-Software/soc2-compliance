@@ -1,38 +1,63 @@
 # SOC 2 Compliance Worker Framework
 
-A lightweight SOC 2 compliance framework designed for very small companies (<5 people). Uses markdown documents as the data store, an MCP server as the agent interface, and Claude Code skills for automation.
+An open-source, agent-powered SOC 2 compliance framework for small companies (<5 people). Clone this repo, point it at your infrastructure, and let AI agents generate your policies, collect evidence, and tell you exactly what's left before you're audit-ready.
 
-## Why This Exists
+Everything lives as markdown files in a git repo. No SaaS platform. No $10K/year subscription. No vendor lock-in.
 
-SOC 2 compliance tools (Vanta, Drata, etc.) cost $10K+/year and are designed for companies with 50+ employees. If you're a solo developer or small team, you need something simpler:
+## How It Works
 
-- **Markdown-native**: All compliance data lives as version-controlled markdown files
-- **Solo-company adapted**: Compensating controls, self-review checklists, and automation replace multi-person processes
-- **Agent-powered**: AI agents handle evidence collection, policy generation, gap analysis, and audit readiness checks
-- **MCP architecture**: Extensible to any tool via the Model Context Protocol
+This framework has three layers:
 
-## TSC Scope
+1. **Markdown knowledge base** — SOC 2 control mappings, your company config, generated policies, collected evidence, gap reports, and readiness assessments. All version-controlled, all human-readable.
 
-- **Security** (Common Criteria CC1-CC9): 35 sub-controls
-- **Confidentiality** (C1): 6 sub-controls
-- **Target**: SOC 2 Type I (point-in-time), with path to Type II
+2. **MCP server** — A local TypeScript server that gives AI agents structured access to your compliance data (17 tools for reading/writing documents, tracking controls, managing evidence, and running assessments).
+
+3. **Claude Code skills** — Five agent workflows that use the MCP tools to automate the compliance lifecycle: initialize, assess gaps, generate policies, collect evidence, and check audit readiness.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                YOUR INFRASTRUCTURE                            │
+│                                                               │
+│  GitHub ─── AWS/GCP ─── Google Workspace ─── Secrets Mgr     │
+│     │           │              │                  │           │
+│     └───────────┴──────────────┴──────────────────┘           │
+│                         │                                     │
+│                    MCP connections                             │
+│                    (optional — the more you                    │
+│                     connect, the more the                      │
+│                     agents can automate)                       │
+└────────────────────────┬─────────────────────────────────────┘
+                         │
+┌────────────────────────▼─────────────────────────────────────┐
+│  COMPLIANCE FRAMEWORK (this repo)                             │
+│                                                               │
+│  ┌─────────────────┐  ┌──────────────┐  ┌─────────────────┐ │
+│  │  Knowledge Base  │  │  MCP Server   │  │  Agent Skills   │ │
+│  │  (markdown)      │◄─┤  (17 tools)   │◄─┤  (5 workflows)  │ │
+│  │                  │  │              │  │                 │ │
+│  │  controls/       │  │  documents   │  │  /compliance-   │ │
+│  │  policies/       │  │  controls    │  │    init         │ │
+│  │  evidence/       │  │  evidence    │  │    gap          │ │
+│  │  gaps/           │  │  assessment  │  │    policy       │ │
+│  │  assessments/    │  │              │  │    evidence     │ │
+│  │  config/         │  │              │  │    audit        │ │
+│  └─────────────────┘  └──────────────┘  └─────────────────┘ │
+└──────────────────────────────────────────────────────────────┘
+```
+
+**The key idea:** The agents are designed to do as much as they can automatically — and ask you for the rest. Connect more infrastructure MCPs and they automate more. Connect none and they walk you through everything interactively.
 
 ## Quick Start
 
 ```bash
-# Install dependencies
-npm install
+# 1. Clone and install
+git clone <this-repo>
+cd compliance-worker-framework
+npm install && npm run build
 
-# Build the MCP server
-npm run build
-
-# Run tests
-npm test
+# 2. Register the MCP server with Claude Code
+#    Add to .claude/settings.json or your MCP config:
 ```
-
-### Register the MCP Server
-
-Add to your Claude Code MCP configuration:
 
 ```json
 {
@@ -48,95 +73,116 @@ Add to your Claude Code MCP configuration:
 }
 ```
 
-### Compliance Workflow
-
-1. **`/compliance-init`** — Set up the framework for your company
-2. **`/compliance-gap`** — Run a gap assessment against SOC 2 requirements
-3. **`/compliance-policy`** — Generate tailored policies from the gap report
-4. **`/compliance-evidence`** — Collect and organize evidence
-5. **`/compliance-audit`** — Check audit readiness (pass/fail)
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────┐
-│           KNOWLEDGE BASE (markdown)          │
-│                                              │
-│  compliance/controls/   - TSC control maps   │
-│  compliance/config/     - Company scope       │
-│  compliance/policies/   - Generated policies  │
-│  compliance/evidence/   - Collected evidence  │
-│  compliance/gaps/       - Gap analysis        │
-│  compliance/assessments/- Readiness checks    │
-└──────────┬───────────────────────────────────┘
-           │
-    ┌──────▼──────┐
-    │  MCP SERVER  │  17 tools across 4 groups:
-    │  (TypeScript) │  documents, controls,
-    │  stdio        │  evidence, assessment
-    └──────┬──────┘
-           │
-    ┌──────▼──────────────────────────────────┐
-    │          CLAUDE CODE SKILLS              │
-    │                                          │
-    │  /compliance-init     Setup              │
-    │  /compliance-gap      Gap assessment     │
-    │  /compliance-policy   Policy generation  │
-    │  /compliance-evidence Evidence collection│
-    │  /compliance-audit    Readiness check    │
-    └─────────────────────────────────────────┘
+```bash
+# 3. Run the compliance workflow
+/compliance-init        # Set up for your company
+/compliance-gap         # Assess current state against SOC 2
+/compliance-policy      # Generate tailored policies
+/compliance-evidence    # Collect and organize proof
+/compliance-audit       # Check: are you audit-ready?
 ```
 
-## MCP Tools (17)
+That's it. Your compliance state lives in `compliance/` as markdown, versioned in git alongside your code.
 
-### Document Management
-| Tool | Description |
-|------|-------------|
-| `list_documents` | List docs by type with optional status filter |
-| `read_document` | Read a document with parsed frontmatter |
-| `create_document` | Create with YAML frontmatter metadata |
-| `update_document` | Update content and/or metadata |
-| `update_document_status` | Change lifecycle status |
+## What the Agents Do
 
-### Control Management
-| Tool | Description |
-|------|-------------|
-| `list_controls` | List controls, filter by criteria group |
-| `get_control` | Get control details and evidence requirements |
-| `get_control_coverage` | Coverage summary with percentages |
-| `map_evidence_to_control` | Link evidence to a control |
+| Skill | What It Does | Output |
+|-------|-------------|--------|
+| `/compliance-init` | Asks about your company, stack, and environment. Populates the scope config. | `compliance/config/scope.md` |
+| `/compliance-gap` | 4-phase assessment: discover your environment, map to SOC 2 controls, score each control, produce a prioritized gap report. | `compliance/gaps/gap-analysis-YYYY-MM-DD.md` |
+| `/compliance-policy` | Reads the gap report, generates tailored policies that reference your actual tools and configs. Not generic templates — policies specific to your stack. | `compliance/policies/*.md` |
+| `/compliance-evidence` | Collects evidence from connected MCPs (GitHub, cloud, IdP). Prompts for manual attestations where automation isn't available. | `compliance/evidence/` + manifest |
+| `/compliance-audit` | Validates everything is in place: policies approved, evidence collected, gaps resolved. Clear pass/fail with action items. | `compliance/assessments/readiness-check-YYYY-MM-DD.md` |
 
-### Evidence Management
-| Tool | Description |
-|------|-------------|
-| `store_evidence` | Store evidence artifacts |
-| `list_evidence` | List evidence by category or control |
-| `get_evidence_manifest` | Full evidence manifest |
-| `update_manifest` | Replace manifest content |
+## Connecting Infrastructure MCPs
 
-### Assessment
-| Tool | Description |
-|------|-------------|
-| `run_gap_analysis` | Produce structured gap report |
-| `run_readiness_check` | Validate audit readiness |
-| `get_compliance_dashboard` | Summary dashboard |
-| `get_remediation_roadmap` | Prioritized remediation plan |
+The more MCPs you connect, the more the agents can discover and collect automatically:
 
-## Templates
+| MCP | What It Unlocks | Controls Covered |
+|-----|----------------|-----------------|
+| **GitHub** | Branch protection, CI/CD config, collaborator access, secret scanning, Dependabot | CC5.1, CC5.2, CC7.1, CC8.1 |
+| **AWS / GCP / Azure** | IAM users & MFA, encryption config, network rules, logging, backups | CC5.1, CC6.1, CC6.6, CC7.1, CC7.3 |
+| **Google Workspace / Okta** | User directory, MFA status, password policy, login audit | CC5.1, CC6.2, CC7.1 |
+| **Secrets Manager** | Secret inventory (names only), rotation dates | CC6.1 |
+| **Endpoint MDM** | Device encryption, OS patches, firewall status | CC5.1, CC6.1, CC6.8 |
 
-- **12 policy templates** (POL-001 through POL-012) with `{{placeholders}}`
-- **5 evidence templates** for manual attestations (access review, vendor review, risk assessment, training, device attestation)
-- **Gap report template** with standard structure
+**Without any infrastructure MCPs**, the agents still work — they just ask you questions instead of pulling data automatically. You can start with zero MCPs and add them over time.
+
+## TSC Scope
+
+- **Security** (Common Criteria CC1-CC9): 35 sub-controls
+- **Confidentiality** (C1): 6 sub-controls
+- **Target**: SOC 2 Type I (point-in-time), with path to Type II
+
+## What's in the Box
+
+### Control Mappings (41 sub-controls)
+Pre-built reference for every SOC 2 control in scope. Each control includes:
+- What the auditor looks for
+- Evidence types needed
+- MCP discovery targets (what to collect automatically)
+- Solo-company notes and compensating controls
+
+### Policy Templates (12)
+Auditor-ready policy structures with `{{placeholders}}` for your environment:
+
+| # | Policy | Controls |
+|---|--------|----------|
+| 1 | Information Security Policy | CC1.1, CC2.1 |
+| 2 | Access Control Policy | CC5.1, CC6.1-CC6.5 |
+| 3 | Encryption Policy | CC6.1 |
+| 4 | Change Management Policy | CC8.1-CC8.3 |
+| 5 | Incident Response Plan | CC7.2 |
+| 6 | Risk Assessment Policy | CC3.1-CC3.4 |
+| 7 | Vendor Management Policy | CC9.1 |
+| 8 | Data Classification Policy | CC6.1, C1.1 |
+| 9 | Acceptable Use Policy | CC1.1 |
+| 10 | Business Continuity / DR Policy | CC7.3-CC7.4 |
+| 11 | Confidentiality Policy | C1.1, C1.2 |
+| 12 | Logging & Monitoring Policy | CC7.1, CC4.1 |
+
+### Evidence Templates (5)
+Structured templates for manual attestations:
+- Quarterly access review
+- Quarterly vendor review
+- Annual risk assessment
+- Annual training completion
+- Device security attestation
+
+### MCP Server (17 tools)
+| Group | Tools |
+|-------|-------|
+| Documents | `list_documents`, `read_document`, `create_document`, `update_document`, `update_document_status` |
+| Controls | `list_controls`, `get_control`, `get_control_coverage`, `map_evidence_to_control` |
+| Evidence | `store_evidence`, `list_evidence`, `get_evidence_manifest`, `update_manifest` |
+| Assessment | `run_gap_analysis`, `run_readiness_check`, `get_compliance_dashboard`, `get_remediation_roadmap` |
 
 ## Solo-Company Adaptations
 
-Key compensating controls built into every template:
+Every control mapping, policy template, and agent workflow includes adaptations for 1-5 person companies:
 
-- **Separation of duties**: CI/CD gates (tests, lint, security scan) serve as independent verification
-- **Access reviews**: Quarterly self-review checklists replace manager-led reviews
-- **Security training**: Self-directed annual training with documented completion
-- **Incident escalation**: External contacts (legal, insurance, vendors) replace internal escalation chain
-- **Governance**: External advisors supplement single-person governance
+- **Separation of duties** → CI/CD gates (tests, lint, security scan) serve as independent verification
+- **Access reviews** → Quarterly self-review checklists replace manager-led reviews
+- **Security training** → Self-directed annual training with documented completion
+- **Incident escalation** → External contacts (legal, insurance, vendors) replace internal chain
+- **Governance** → External advisors supplement single-person governance
+
+These aren't workarounds — they're legitimate compensating controls that auditors accept for small organizations.
+
+## Roadmap
+
+- [ ] Infrastructure MCP integrations (AWS, GCP, GitHub)
+- [ ] Automated evidence collection on a schedule (for Type II)
+- [ ] Additional TSC criteria (Availability, Processing Integrity, Privacy)
+- [ ] Pre-built Plaid/Stripe security questionnaire mappings
+- [ ] Multi-framework support (ISO 27001, HIPAA)
+
+## Contributing
+
+Contributions welcome. The most impactful additions are:
+1. **Infrastructure MCP integrations** — connect to real cloud/identity/SCM providers
+2. **Additional TSC criteria** — expand beyond Security + Confidentiality
+3. **Evidence collection automations** — more things the agents can discover without asking
 
 ## License
 
