@@ -23,6 +23,7 @@ const DOC_TYPES: DocumentType[] = [
   "assessments",
   "inventory",
   "config",
+  "agents",
 ];
 
 export function registerDocumentTools(server: McpServer): void {

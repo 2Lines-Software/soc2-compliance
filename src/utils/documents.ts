@@ -9,7 +9,8 @@ export type DocumentType =
   | "gaps"
   | "assessments"
   | "inventory"
-  | "config";
+  | "config"
+  | "agents";
 
 export interface DocumentEntry {
   path: string;

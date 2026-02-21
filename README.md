@@ -93,6 +93,21 @@ That's it. Your compliance state lives in `compliance/` as markdown, versioned i
 | `/compliance-policy` | Reads the gap report, generates tailored policies that reference your actual tools and configs. Not generic templates — policies specific to your stack. | `compliance/policies/*.md` |
 | `/compliance-evidence` | Collects evidence from connected MCPs (GitHub, cloud, IdP). Prompts for manual attestations where automation isn't available. | `compliance/evidence/` + manifest |
 | `/compliance-audit` | Validates everything is in place: policies approved, evidence collected, gaps resolved. Clear pass/fail with action items. | `compliance/assessments/readiness-check-YYYY-MM-DD.md` |
+| `/compliance-agents` | Register AI agents, classify context trust, audit against AGT controls, check credential rotation. Optional add-on for orgs using AI agents. | `compliance/agents/AGENT-*.md` |
+
+## Agent Governance (Optional Add-On)
+
+If you use AI agents in your organization, the framework includes an optional agent governance module. This is ahead of most SOC 2 programs — auditors are starting to ask about AI agent controls, and this gives you the answer.
+
+**The core concept is context trust:**
+- **Trusted context**: All LLM input comes from org-controlled sources. Operational risk only.
+- **Untrusted context**: Any LLM input comes from outside the org. Adversarial risk applies.
+
+This classification determines which controls apply:
+- **Tier 1 (AGT-01 to AGT-10)**: All agents — registration, access scope, credentials, logging, reviews
+- **Tier 2 (AGT-11 to AGT-19)**: Untrusted agents only — input validation, prompt injection defenses, blue team testing
+
+Run `/compliance-agents` to register agents, audit compliance, and check credential rotation. See `AGENT-GOVERNANCE-FRAMEWORK.md` for the full design.
 
 ## Connecting Infrastructure MCPs
 
