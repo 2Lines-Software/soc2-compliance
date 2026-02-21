@@ -209,6 +209,10 @@ Contributions welcome. The most impactful additions are:
 2. **Additional TSC criteria** — expand beyond Security + Confidentiality
 3. **Evidence collection automations** — more things the agents can discover without asking
 
+## Disclaimer
+
+This project provides tooling and templates to assist with SOC 2 compliance management. It does not constitute professional advice and does not guarantee compliance with any framework. All generated policies, questionnaire responses, and Trust Center content must be reviewed by qualified professionals before use. See [DISCLAIMER.md](DISCLAIMER.md) for full details.
+
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
