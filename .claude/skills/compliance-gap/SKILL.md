@@ -1,3 +1,8 @@
+---
+name: compliance-gap
+description: Run a SOC 2 gap assessment against the configured environment. Implements the four-phase pipeline Discover, Map, Assess, Report. Produces a prioritized gap report with remediation roadmap. Use when saying "run gap assessment", "compliance-gap", "assess compliance gaps", or "check SOC 2 gaps".
+---
+
 # /compliance-gap — SOC 2 Gap Assessment Agent
 
 ## Description

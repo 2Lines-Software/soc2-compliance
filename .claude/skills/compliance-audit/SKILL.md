@@ -1,3 +1,8 @@
+---
+name: compliance-audit
+description: Validate that all required documentation, evidence, and controls are in place before a SOC 2 Type I audit. Produces a readiness assessment with a clear pass/fail verdict and actionable items for any gaps. Use when saying "check audit readiness", "compliance-audit", "am I ready for audit", or "run readiness check".
+---
+
 # /compliance-audit — Audit Readiness Checker
 
 ## Description

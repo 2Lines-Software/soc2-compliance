@@ -1,3 +1,8 @@
+---
+name: compliance-policy
+description: Generate tailored, auditor-ready security policies based on the gap assessment report and environment inventory. Policies are specific to the company's actual tools and configurations, not generic templates. Use when saying "generate policies", "compliance-policy", "create security policies", or "write SOC 2 policies".
+---
+
 # /compliance-policy — SOC 2 Policy Generation Agent
 
 ## Description

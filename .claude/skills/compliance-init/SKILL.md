@@ -1,3 +1,8 @@
+---
+name: compliance-init
+description: Initialize the SOC 2 compliance framework for a company. Collects company information and populates the configuration scope, evidence manifest, and verifies control mappings are in place. Use when saying "initialize compliance", "compliance-init", "set up SOC 2", or "start compliance framework".
+---
+
 # /compliance-init — Initialize SOC 2 Compliance Framework
 
 ## Description

@@ -1,3 +1,8 @@
+---
+name: compliance-evidence
+description: Collect and organize compliance evidence from available sources. Gathers automated evidence via MCP integrations and prompts for manual attestations where automation isn't available. Updates the evidence manifest. Use when saying "collect evidence", "compliance-evidence", "gather compliance proof", or "refresh evidence".
+---
+
 # /compliance-evidence — Evidence Collection Agent
 
 ## Description

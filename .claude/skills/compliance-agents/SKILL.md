@@ -1,3 +1,8 @@
+---
+name: compliance-agents
+description: Manage the agent governance registry. Register new agents, audit existing agents against the AGT control matrix, check credential rotation, and generate agent governance reports. Use when saying "register agent", "compliance-agents", "audit agents", "agent governance", or "quarterly agent review".
+---
+
 # /compliance-agents — Agent Governance Management
 
 ## Description
