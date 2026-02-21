@@ -65,6 +65,10 @@ Use the built-in infrastructure tools to collect evidence. Each tool returns str
 3. `tf_workspace` (working_dir?) → CC8.1 (environment separation)
 4. `tf_providers` (working_dir?) → CC8.1 (provider coverage)
 
+**Nuclei (`nuclei` CLI):**
+1. Run `nuclei_auth_status` — if installed, proceed:
+2. `nuclei_scan` (urls, tags?, severity?, rate_limit?) → CC3.2, CC4.1, CC6.1, CC6.6, CC7.1 (pentest evidence)
+
 Get the owner/repo/project values from `config/scope.md`.
 
 For each tool result, store the output using `store_evidence` with:
@@ -143,3 +147,4 @@ After all collection:
 - `gam_*` — Google Workspace infrastructure discovery (5 tools)
 - `cf_*` — Cloudflare infrastructure discovery (5 tools)
 - `tf_*` — Terraform infrastructure discovery (4 tools)
+- `nuclei_*` — Nuclei vulnerability scanning (2 tools)

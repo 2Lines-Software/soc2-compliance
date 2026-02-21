@@ -5,6 +5,7 @@ import { registerGCloudTools } from "./infra-gcloud.js";
 import { registerGamTools } from "./infra-gam.js";
 import { registerCloudflareTools } from "./infra-cloudflare.js";
 import { registerTerraformTools } from "./infra-terraform.js";
+import { registerNucleiTools } from "./infra-nuclei.js";
 
 export function registerInfraTools(server: McpServer): void {
   registerGitHubTools(server);
@@ -13,4 +14,5 @@ export function registerInfraTools(server: McpServer): void {
   registerGamTools(server);
   registerCloudflareTools(server);
   registerTerraformTools(server);
+  registerNucleiTools(server);
 }
