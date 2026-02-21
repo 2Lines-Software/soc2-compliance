@@ -45,6 +45,26 @@ Use the built-in infrastructure tools to collect evidence. Each tool returns str
 5. `gcloud_kms_keys` (project) → CC6.1
 6. `gcloud_firewall_rules` (project) → CC6.6
 
+**Google Workspace (`gam` CLI):**
+1. Run `gam_auth_status` — if authenticated, proceed:
+2. `gam_users` → CC5.1 (user directory, admin count, suspended accounts)
+3. `gam_mfa_status` → CC6.2 (2-step verification enrollment)
+4. `gam_admin_roles` → CC5.1 (admin role assignments)
+5. `gam_login_audit` (days) → CC7.1 (login events, unique IPs)
+
+**Cloudflare (`curl` + `CF_API_TOKEN`):**
+1. Run `cf_auth_status` — if authenticated, proceed:
+2. `cf_zones` → CC6.1, CC6.6 (active zones and plans)
+3. `cf_ssl_tls` (zone_id) → CC6.1 (SSL mode, minimum TLS version)
+4. `cf_waf_rules` (zone_id) → CC6.6 (WAF enabled/disabled)
+5. `cf_security_settings` (zone_id) → CC6.1, CC6.6 (HTTPS enforcement, security level)
+
+**Terraform (`terraform` CLI):**
+1. Run `tf_version` — if installed, proceed:
+2. `tf_state_resources` (working_dir?) → CC8.1 (IaC resource inventory by type)
+3. `tf_workspace` (working_dir?) → CC8.1 (environment separation)
+4. `tf_providers` (working_dir?) → CC8.1 (provider coverage)
+
 Get the owner/repo/project values from `config/scope.md`.
 
 For each tool result, store the output using `store_evidence` with:
@@ -120,3 +140,6 @@ After all collection:
 - `gh_*` — GitHub infrastructure discovery (5 tools)
 - `aws_*` — AWS infrastructure discovery (7 tools)
 - `gcloud_*` — Google Cloud infrastructure discovery (6 tools)
+- `gam_*` — Google Workspace infrastructure discovery (5 tools)
+- `cf_*` — Cloudflare infrastructure discovery (5 tools)
+- `tf_*` — Terraform infrastructure discovery (4 tools)

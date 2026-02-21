@@ -111,15 +111,18 @@ Run `/compliance-agents` to register agents, audit compliance, and check credent
 
 ## Infrastructure Discovery (Built-in)
 
-The MCP server includes built-in infrastructure discovery tools that wrap CLIs you already have installed. No third-party MCP packages needed — just `gh`, `aws`, and `gcloud` with your existing authentication.
+The MCP server includes built-in infrastructure discovery tools that wrap CLIs you already have installed. No third-party MCP packages needed — just your existing CLIs with your existing authentication.
 
-| CLI | Tools | What It Checks | Controls |
-|-----|-------|---------------|----------|
-| **`gh`** | `gh_auth_status`, `gh_branch_protection`, `gh_repo_security`, `gh_collaborators`, `gh_workflows` | Branch protection rules, secret scanning, Dependabot, collaborator access, CI/CD workflows | CC5.1, CC5.2, CC7.1, CC8.1 |
-| **`aws`** | `aws_auth_status`, `aws_iam_mfa_status`, `aws_cloudtrail_status`, `aws_s3_encryption`, `aws_kms_keys`, `aws_security_groups`, `aws_backup_config` | IAM users & MFA, CloudTrail logging, S3 encryption, KMS key rotation, security group rules, backup plans | CC5.1, CC6.1, CC6.2, CC6.6, CC7.1, CC7.3 |
+| CLI / Auth | Tools | What It Checks | Controls |
+|------------|-------|---------------|----------|
+| **`gh`** | `gh_auth_status`, `gh_branch_protection`, `gh_repo_security`, `gh_collaborators`, `gh_workflows` | Branch protection, secret scanning, Dependabot, collaborator access, CI/CD workflows | CC5.1, CC5.2, CC7.1, CC8.1 |
+| **`aws`** | `aws_auth_status`, `aws_iam_mfa_status`, `aws_cloudtrail_status`, `aws_s3_encryption`, `aws_kms_keys`, `aws_security_groups`, `aws_backup_config` | IAM users & MFA, CloudTrail, S3 encryption, KMS rotation, security groups, backups | CC5.1, CC6.1, CC6.2, CC6.6, CC7.1, CC7.3 |
 | **`gcloud`** | `gcloud_auth_status`, `gcloud_iam_policy`, `gcloud_service_accounts`, `gcloud_logging_sinks`, `gcloud_kms_keys`, `gcloud_firewall_rules` | IAM policies, service accounts, logging sinks, KMS keys, firewall rules | CC5.1, CC6.1, CC6.6, CC7.1 |
+| **`gam`** | `gam_auth_status`, `gam_users`, `gam_mfa_status`, `gam_admin_roles`, `gam_login_audit` | Workspace user directory, 2-step verification, admin roles, login audit | CC5.1, CC6.2, CC7.1 |
+| **`curl`** + `CF_API_TOKEN` | `cf_auth_status`, `cf_zones`, `cf_ssl_tls`, `cf_waf_rules`, `cf_security_settings` | SSL/TLS mode, WAF rules, HTTPS enforcement, security level | CC6.1, CC6.6 |
+| **`terraform`** | `tf_version`, `tf_state_resources`, `tf_workspace`, `tf_providers` | IaC resource inventory, workspace separation, provider coverage | CC8.1 |
 
-**How it works:** Each tool shells out to the CLI, parses JSON output, and returns structured findings mapped to TSC controls. All tools are read-only. Auth is your responsibility — the framework never stores or manages credentials.
+**How it works:** Each tool shells out to the CLI, parses the output, and returns structured findings mapped to TSC controls. All tools are read-only. Auth is your responsibility — the framework never stores or manages credentials.
 
 **Without any CLIs installed**, the agents still work — they just ask you questions instead of pulling data automatically. Install and authenticate CLIs as you go.
 
@@ -164,7 +167,7 @@ Structured templates for manual attestations:
 - Annual training completion
 - Device security attestation
 
-### MCP Server (40 tools)
+### MCP Server (54 tools)
 | Group | Tools |
 |-------|-------|
 | Documents | `list_documents`, `read_document`, `create_document`, `update_document`, `update_document_status` |
@@ -175,6 +178,9 @@ Structured templates for manual attestations:
 | GitHub | `gh_auth_status`, `gh_branch_protection`, `gh_repo_security`, `gh_collaborators`, `gh_workflows` |
 | AWS | `aws_auth_status`, `aws_iam_mfa_status`, `aws_cloudtrail_status`, `aws_s3_encryption`, `aws_kms_keys`, `aws_security_groups`, `aws_backup_config` |
 | GCloud | `gcloud_auth_status`, `gcloud_iam_policy`, `gcloud_service_accounts`, `gcloud_logging_sinks`, `gcloud_kms_keys`, `gcloud_firewall_rules` |
+| Workspace | `gam_auth_status`, `gam_users`, `gam_mfa_status`, `gam_admin_roles`, `gam_login_audit` |
+| Cloudflare | `cf_auth_status`, `cf_zones`, `cf_ssl_tls`, `cf_waf_rules`, `cf_security_settings` |
+| Terraform | `tf_version`, `tf_state_resources`, `tf_workspace`, `tf_providers` |
 
 ## Solo-Company Adaptations
 

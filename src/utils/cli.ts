@@ -40,6 +40,7 @@ export interface CliOptions {
   timeoutMs?: number;
   parseJson?: boolean;
   env?: Record<string, string>;
+  cwd?: string;
 }
 
 export interface Finding {
@@ -97,6 +98,7 @@ export async function execCli(
       timeout: timeoutMs,
       maxBuffer: 10 * 1024 * 1024,
       env: { ...process.env, ...options?.env },
+      ...(options?.cwd ? { cwd: options.cwd } : {}),
     });
 
     let parsed: unknown = null;
@@ -135,6 +137,27 @@ export async function execCli(
       exitCode: error.exitCode ?? error.status,
     };
   }
+}
+
+// --- CSV parsing ---
+
+/**
+ * Parse simple CSV output (header row + data rows) into objects.
+ * Handles GAM-style CSV output. Does not handle quoted commas.
+ */
+export function parseCsv(csv: string): Array<Record<string, string>> {
+  const lines = csv.trim().split("\n").filter((l) => l.trim());
+  if (lines.length < 2) return [];
+
+  const headers = lines[0].split(",").map((h) => h.trim());
+  return lines.slice(1).map((line) => {
+    const values = line.split(",").map((v) => v.trim());
+    const obj: Record<string, string> = {};
+    headers.forEach((h, i) => {
+      obj[h] = values[i] ?? "";
+    });
+    return obj;
+  });
 }
 
 // --- Response helpers ---
