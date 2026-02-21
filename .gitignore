@@ -1,0 +1,22 @@
+node_modules/
+dist/
+*.js.map
+*.d.ts.map
+
+# Evidence artifacts (may contain sensitive data)
+compliance/evidence/automated/**/*.json
+compliance/evidence/automated/**/*.yaml
+compliance/evidence/manual/*.png
+compliance/evidence/manual/*.jpg
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
