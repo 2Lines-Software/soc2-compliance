@@ -314,6 +314,73 @@ No additional permissions beyond what Terraform already has. The tools only read
 
 ---
 
+## Nuclei Vulnerability Scanner (`nuclei`)
+
+**What it checks:** SSL/TLS issues, missing security headers, misconfigurations, exposed services, known CVEs across your web-facing URLs.
+
+**SOC 2 controls:** CC3.2, CC4.1, CC6.1, CC6.6, CC7.1
+
+Nuclei is an open-source, template-based vulnerability scanner from ProjectDiscovery. It produces structured, repeatable scan results — exactly what auditors want to see for penetration testing evidence.
+
+### Install
+
+```bash
+# macOS
+brew install nuclei
+
+# Go (any platform, requires Go 1.21+)
+go install -v github.com/projectdiscovery/nuclei/v3/cmd/nuclei@latest
+```
+
+On first run, Nuclei automatically downloads its community template library (~12,000 templates).
+
+### Update templates
+
+```bash
+nuclei -update-templates
+```
+
+Run this periodically to get the latest vulnerability checks.
+
+### What the tools do
+
+| Tool | What it checks |
+|------|---------------|
+| `nuclei_auth_status` | Is Nuclei installed? Returns version. |
+| `nuclei_scan` | Runs a vulnerability scan against 1-25 URLs with SOC 2-relevant templates |
+
+### How `nuclei_scan` works
+
+The scan tool accepts:
+
+- **`urls`** (required) — array of target URLs (1-25)
+- **`tags`** (optional) — template tags to scan for (default: ssl, tls, security-headers, misconfiguration, exposure, cve, network, token, default-login)
+- **`severity`** (optional) — severity filter (default: critical, high, medium, low)
+- **`rate_limit`** (optional) — requests per second (default: 25)
+
+The scan is rate-limited and uses only SOC 2-relevant template tags by default. It runs with a 5-minute timeout, which is sufficient for ~20 URLs.
+
+Findings are automatically mapped to TSC controls:
+
+| Finding type | TSC control |
+|-------------|-------------|
+| SSL/TLS issues | CC6.1 (encryption in transit) |
+| Missing security headers | CC6.1 |
+| Misconfigurations, exposures | CC6.6 (security boundaries) |
+| Known CVEs | CC7.1 (vulnerability detection) |
+| Any critical/high/medium finding | CC4.1 (deficiency management) |
+| The scan itself | CC3.2 (risk assessment activity) |
+
+### Permissions needed
+
+No credentials or API tokens. Nuclei scans are outbound HTTP requests to URLs you own. **You must have authorization to scan all target URLs.**
+
+### Running a pentest
+
+Use the `/compliance-pentest` skill for a guided workflow that runs the scan, analyzes findings, stores evidence, and generates a pentest report. Or call `nuclei_scan` directly through `/compliance-evidence`.
+
+---
+
 ## How the tools work together
 
 When you run `/compliance-evidence`, the agent:
@@ -336,6 +403,7 @@ The more CLIs you install, the more evidence is collected automatically. The age
 | + `gam` | + CC6.2 (Workspace MFA), CC7.1 (login audit) |
 | + `CF_API_TOKEN` | + CC6.1 (TLS), CC6.6 (WAF) |
 | + `terraform` | + CC8.1 (IaC proof) |
+| + `nuclei` | + CC3.2 (risk assessment), CC4.1 (deficiency mgmt) |
 
 ### Priority order
 
@@ -343,6 +411,7 @@ If you're setting up from scratch, install in this order for maximum compliance 
 
 1. **GitHub CLI** — most companies already use GitHub; covers change management
 2. **AWS or GCloud CLI** — whichever cloud you use; covers encryption, access, monitoring
-3. **Google Workspace (GAM)** — if you use Google Workspace; covers identity and MFA
-4. **Cloudflare** — if you use Cloudflare; covers network security
-5. **Terraform** — if you use IaC; provides strong CC8.1 evidence
+3. **Nuclei** — single binary, no auth needed; covers pentest evidence and risk assessment
+4. **Google Workspace (GAM)** — if you use Google Workspace; covers identity and MFA
+5. **Cloudflare** — if you use Cloudflare; covers network security
+6. **Terraform** — if you use IaC; provides strong CC8.1 evidence
